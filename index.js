@@ -8,23 +8,19 @@ function getJoke() {
   return new Promise((resolve, reject) => {
     var options = {
       host: 'www.jokerrank.co.uk',
-      path: '/api/jokes/random',
+      path: '/api/jokes/randomclean',
       method: 'GET'
     };
-
     const request = http.request(options, response => {
       response.setEncoding('utf8');
       let returnData = '';
-
       response.on('data', chunk => {
         returnData += chunk;
       });
-
       response.on('end', () => {
         const joke = JSON.parse(returnData);
         resolve(JSON.parse(returnData).joke);
       });
-
       response.on('error', error => {
         reject(error);
       });
@@ -32,20 +28,6 @@ function getJoke() {
     request.end();
   });
 }
-
-// const launchHandler = {
-//   canHandle(handlerInput) {
-
-//     const request = handlerInput.requestEnvelope.request;
-
-//     return request.type === 'LaunchRequest'
-
-//       ||
-
-//     (request.type === 'IntentRequest' && request.intent.name === 'GetNewFactIntent');
-
-// },
-// }
 
 const GetRandomJokeHandler = {
   canHandle(handlerInput) {
@@ -58,12 +40,9 @@ const GetRandomJokeHandler = {
   },
   async handle(handlerInput) {
     const response = await getJoke();
-
-    console.log(response);
-
     return handlerInput.responseBuilder
       .speak('Okay. Here is one for you: ' + response)
-      .reprompt('What would you like?')
+      .withShouldEndSession(true)
       .getResponse();
   }
 };
